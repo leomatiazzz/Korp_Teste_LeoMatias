@@ -151,10 +151,39 @@ namespace FaturamentoService.Services
                 throw new KeyNotFoundException($"Nota Fiscal com ID {id} não encontrada.");
             }
 
-            // 1. Validar se a nota está Aberta (não permitir impressão de nota já Fechada)
+            // 1. Verificação de Idempotência no Faturamento
+            // Se a nota já estiver Fechada, retorna o estado final imediatamente sem reexecutar baixa de estoque
             if (nota.Status == NotaStatus.Fechada)
             {
-                throw new InvalidOperationException($"A Nota Fiscal Nº {nota.Numero} já se encontra FECHADA e não pode ser impressa/fechada novamente.");
+                _logger.LogInformation("Operação idempotente: Nota Fiscal Nº {Numero} já se encontra FECHADA.", nota.Numero);
+
+                var notaFechadaDto = new NotaFiscalDto
+                {
+                    Id = nota.Id,
+                    Numero = nota.Numero,
+                    Status = nota.Status,
+                    DataCriacao = nota.DataCriacao,
+                    DataFechamento = nota.DataFechamento,
+                    Observacao = nota.Observacao,
+                    TotalItens = nota.Itens.Count,
+                    QuantidadeTotalProdutos = nota.Itens.Sum(i => i.Quantidade),
+                    Itens = nota.Itens.Select(i => new ItemNotaFiscalDto
+                    {
+                        Id = i.Id,
+                        ProdutoId = i.ProdutoId,
+                        CodigoProduto = i.CodigoProduto,
+                        DescricaoProduto = i.DescricaoProduto,
+                        Quantidade = i.Quantidade
+                    }).ToList()
+                };
+
+                return new ImprimirNotaResultadoDto
+                {
+                    Sucesso = true,
+                    Mensagem = $"Operação idempotente: A Nota Fiscal Nº {nota.Numero} já havia sido impressa e finalizada.",
+                    NotaFiscal = notaFechadaDto,
+                    DetalheEstoque = new { Idempotente = true, Mensagem = "Nota fiscal já encerrada anteriormente." }
+                };
             }
 
             if (!nota.Itens.Any())

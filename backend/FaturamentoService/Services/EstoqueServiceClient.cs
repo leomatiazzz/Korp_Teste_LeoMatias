@@ -28,6 +28,8 @@ namespace FaturamentoService.Services
         {
             var requestPayload = new EstoqueBaixarRequest
             {
+                NotaFiscalId = numeroNota,
+                IdempotencyKey = $"NF-{numeroNota}",
                 Motivo = $"Emissão da Nota Fiscal Nº {numeroNota}",
                 Itens = itens.Select(i => new EstoqueBaixarItemRequest
                 {

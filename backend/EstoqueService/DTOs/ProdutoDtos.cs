@@ -65,6 +65,10 @@ namespace EstoqueService.DTOs
         [MinLength(1, ErrorMessage = "A lista de itens para baixa não pode estar vazia.")]
         public List<BaixarEstoqueItemDto> Itens { get; set; } = new();
 
+        public int? NotaFiscalId { get; set; }
+
+        public string? IdempotencyKey { get; set; }
+
         public string? Motivo { get; set; }
     }
 
@@ -81,6 +85,7 @@ namespace EstoqueService.DTOs
     public class BaixaEstoqueResultadoDto
     {
         public bool Sucesso { get; set; }
+        public bool Idempotente { get; set; }
         public string Mensagem { get; set; } = string.Empty;
         public List<BaixaEstoqueItemResultadoDto> ItensProcessados { get; set; } = new();
     }

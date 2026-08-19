@@ -71,6 +71,8 @@ namespace FaturamentoService.DTOs
     public class EstoqueBaixarRequest
     {
         public List<EstoqueBaixarItemRequest> Itens { get; set; } = new();
+        public int? NotaFiscalId { get; set; }
+        public string? IdempotencyKey { get; set; }
         public string? Motivo { get; set; }
     }
 
@@ -87,6 +89,7 @@ namespace FaturamentoService.DTOs
     public class EstoqueBaixaResponse
     {
         public bool Sucesso { get; set; }
+        public bool Idempotente { get; set; }
         public string Mensagem { get; set; } = string.Empty;
         public List<EstoqueBaixaItemResultado> ItensProcessados { get; set; } = new();
     }

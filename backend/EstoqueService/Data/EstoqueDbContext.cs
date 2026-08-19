@@ -10,6 +10,7 @@ namespace EstoqueService.Data
         }
 
         public DbSet<Produto> Produtos => Set<Produto>();
+        public DbSet<MovimentacaoEstoque> MovimentacoesEstoque => Set<MovimentacaoEstoque>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,26 @@ namespace EstoqueService.Data
                     .HasDefaultValue(0);
 
                 entity.Property(p => p.CriadoEm)
+                    .HasDefaultValueSql("NOW()");
+            });
+
+            modelBuilder.Entity<MovimentacaoEstoque>(entity =>
+            {
+                entity.ToTable("movimentacoes_estoque");
+
+                entity.HasKey(m => m.Id);
+
+                entity.Property(m => m.NotaFiscalId)
+                    .IsRequired();
+
+                entity.HasIndex(m => m.NotaFiscalId);
+
+                entity.HasIndex(m => m.IdempotencyKey);
+
+                entity.Property(m => m.Quantidade)
+                    .IsRequired();
+
+                entity.Property(m => m.CriadoEm)
                     .HasDefaultValueSql("NOW()");
             });
         }

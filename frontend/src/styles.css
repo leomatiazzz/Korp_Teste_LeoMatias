@@ -1,0 +1,273 @@
+/* Angular Material Prebuilt Theme */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* ==========================================================================
+   Design Tokens - Identidade Visual Korp ERP (Viasoft)
+   ========================================================================== */
+:root {
+  /* Cores Principais da Marca Korp */
+  --primary-color: #2b485a;        /* Azul ardósia corporativo da Korp */
+  --primary-dark: #1b3240;         /* Tom escuro para cabeçalhos e contrastes */
+  --primary-light: #3e6279;        /* Azul ardósia médio */
+  --primary-subtle: #edf3f7;       /* Fundo suave com tom azul-petróleo */
+  
+  /* Cor de Destaque / Ação Korp (Viasoft) */
+  --accent-color: #ff0c46;         /* Magenta/Coral vibrante oficial da Korp */
+  --accent-hover: #e00038;         /* Hover de ação */
+  --accent-light: #fff0f3;         /* Fundo sutil para destaques */
+  
+  /* Superfícies e Fundos */
+  --bg-main: #f4f6f8;              /* Fundo corporativo neutro e suave */
+  --bg-card: #ffffff;              /* Branco puro para superfícies e cards */
+  --border-color: #dce4eb;         /* Bordas sutis e limpas */
+  --border-focus: #2b485a;
+
+  /* Tipografia */
+  --text-main: #2b485a;            /* Texto primário com tom ardósia da marca */
+  --text-dark: #1a2d38;            /* Títulos de alto destaque */
+  --text-muted: #688294;           /* Texto secundário e legendas */
+  --text-light: #ffffff;           /* Texto sobre fundos escuros */
+
+  /* Estados Funcionais */
+  --success-color: #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  
+  --warning-color: #d97706;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  
+  --danger-color: #e11d48;
+  --danger-bg: #fff1f2;
+  --danger-border: #fecdd3;
+  
+  --info-color: #0284c7;
+  --info-bg: #f0f9ff;
+  --info-border: #bae6fd;
+
+  /* Elevação e Raios */
+  --shadow-xs: 0 1px 2px 0 rgb(43 72 90 / 0.05);
+  --shadow-sm: 0 2px 4px 0 rgb(43 72 90 / 0.08);
+  --shadow-md: 0 4px 8px -1px rgb(43 72 90 / 0.12), 0 2px 4px -2px rgb(43 72 90 / 0.08);
+  --shadow-lg: 0 12px 20px -4px rgb(43 72 90 / 0.15);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Badges de Status & Indicadores
+   ========================================================================== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.813rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.status-badge.aberta {
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
+  border: 1px solid var(--warning-border);
+}
+
+.status-badge.fechada {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid var(--success-border);
+}
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.stock-badge.high {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid var(--success-border);
+}
+
+.stock-badge.medium {
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
+  border: 1px solid var(--warning-border);
+}
+
+.stock-badge.low {
+  background-color: var(--danger-bg);
+  color: var(--danger-color);
+  border: 1px solid var(--danger-border);
+}
+
+/* ==========================================================================
+   Layouts & Estrutura de Páginas
+   ========================================================================== */
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.01em;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.app-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.app-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #ccd7e2;
+}
+
+/* ==========================================================================
+   Tabelas
+   ========================================================================== */
+.mat-mdc-table {
+  width: 100%;
+  background: transparent !important;
+  font-family: inherit !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  border-bottom: 2px solid var(--border-color) !important;
+  background: #fafbfc !important;
+  padding: 14px 16px !important;
+}
+
+.mat-mdc-cell {
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 14px 16px !important;
+  font-size: 0.875rem !important;
+}
+
+.mat-mdc-row {
+  transition: background-color 0.15s ease;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f7f9fb !important;
+}
+
+/* ==========================================================================
+   Botões Customizados com Estilo Korp
+   ========================================================================== */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-action:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+.btn-accent {
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: 0 2px 6px rgb(255 12 70 / 0.3) !important;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+/* Animações e Feedback */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulsing {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==========================================================================
+   Snackbars Customizados
+   ========================================================================== */
+.snackbar-success {
+  --mdc-snackbar-container-color: var(--primary-color) !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  border-left: 4px solid var(--success-color);
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: var(--primary-dark) !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  border-left: 4px solid var(--accent-color);
+}
+
+.snackbar-warning {
+  --mdc-snackbar-container-color: var(--primary-color) !important;
+  --mdc-snackbar-supporting-text-color: #ffffff !important;
+  border-left: 4px solid var(--warning-color);
+}

@@ -6,12 +6,12 @@ Projeto desenvolvido como parte do processo seletivo técnico da **Korp (Viasoft
 
 ## 📌 Visão geral da arquitetura
 
-O sistema é estruturado em uma arquitetura de **Microsserviços em .NET 9** e um frontend SPA em **Angular com Angular Material**, utilizando persistência real no **PostgreSQL** com isolamento por schemas.
+O sistema é estruturado em uma arquitetura de **microsserviços em .NET 9** e um frontend SPA em **Angular com Angular Material**, utilizando persistência real no **PostgreSQL** com isolamento por schemas.
 
 ```
 ┌────────────────────────────────────────────────────────┐
 │               Frontend Angular (Porta 4200)            │
-│               Identidade Visual Korp / Viasoft         │
+│               Identidade visual Korp / Viasoft         │
 └──────────────┬──────────────────────────┬──────────────┘
                │                          │
                │ HTTP REST                │ HTTP REST
@@ -64,9 +64,57 @@ O sistema é estruturado em uma arquitetura de **Microsserviços em .NET 9** e u
 
 ---
 
+## 📋 Detalhamento técnico da solução (exigido pelo desafio)
+
+Conforme os itens solicitados na especificação técnica do teste:
+
+### 1. Quais ciclos de vida do Angular foram utilizados?
+* **`ngOnInit`**: Utilizado em todos os componentes para inicialização de dados, carregamento das listas de notas fiscais, catálogo de produtos e cálculo de métricas reativas.
+* **`ngOnDestroy`**: Utilizado em conjunto com o operador RxJS `takeUntil(this.destroy$)` para cancelar inscrições ativas e descarregar recursos quando os componentes são destruídos, prevenindo vazamentos de memória (*memory leaks*).
+
+### 2. Uso da biblioteca RxJS
+* **Comunicação assíncrona**: Utilização de `Observable<T>` em todos os métodos dos serviços HTTP (`ProdutoService`, `NotaFiscalService`).
+* **Gerenciamento de ciclo de vida**: Utilização de `Subject<void>` com o operador `takeUntil(this.destroy$)` para garantir que requisições pendentes sejam desinscritas caso o usuário mude de tela.
+* **Operadores e tratamento**: Utilização de `pipe()`, `catchError` para interceptação e normalização de erros de rede/servidor e `finalize` para controle de spinners de carregamento.
+
+### 3. Bibliotecas utilizadas e finalidades
+* **Frontend**:
+  * `@angular/material` e `@angular/cdk`: Componentes visuais de design corporativo acessíveis e responsivos.
+* **Backend C#**:
+  * `Npgsql.EntityFrameworkCore.PostgreSQL`: Provider oficial do Entity Framework Core para comunicação com o PostgreSQL com suporte a schemas isolados e transações.
+  * `Swashbuckle.AspNetCore`: Geração de documentação OpenAPI e interface interativa Swagger.
+
+### 4. Bibliotecas de componentes visuais
+* **Angular Material**: `MatTable`, `MatDialog`, `MatSnackBar`, `MatToolbar`, `MatButton`, `MatIcon`, `MatInput`, `MatFormField`, `MatSelect`, `MatProgressSpinner`, `MatBadge` e `MatTooltip`.
+
+### 5. Gerenciamento de dependências no C#
+* Gerenciamento nativo através do **NuGet** com declaração declarativa nos arquivos `.csproj` e injeção de dependência nativa do ASP.NET Core (`Microsoft.Extensions.DependencyInjection`) através de serviços com escopo `Scoped` e clientes HTTP tipados com `AddHttpClient`.
+
+### 6. Frameworks utilizados em C#
+* **ASP.NET Core Web API (.NET 9)**
+* **Entity Framework Core 9 (EF Core)**
+
+### 7. Tratamento de erros e exceções no backend
+* **Exceções customizadas de domínio**: Criação da classe `EstoqueIndisponivelException` para representar falhas de comunicação entre microsserviços.
+* **Códigos HTTP semânticos**:
+  * `400 Bad Request`: Erros de validação de negócio (saldo insuficiente, código já cadastrado, payload vazio).
+  * `404 Not Found`: Entidade inexistente.
+  * `503 Service Unavailable`: Queda do serviço de estoque durante a impressão da nota fiscal, mantendo o status **Aberta** sem corrupção de estado.
+  * `200 OK` / `201 Created`: Respostas de sucesso com DTOs tipados.
+* **Transações atômicas**: Uso de `BeginTransactionAsync`, `CommitAsync` e `RollbackAsync` para garantir que o banco nunca fique em estado inconsistente.
+
+### 8. Uso de LINQ em C#
+* O LINQ foi amplamente utilizado para consultas, agregações, filtros e projeções:
+  * **Projeções**: `Select(n => new NotaFiscalDto { ... })`
+  * **Filtros e validações**: `Where()`, `AnyAsync()`, `FirstOrDefaultAsync()`
+  * **Agregações numéricas**: `Sum(i => i.Quantidade)`, `Count()`
+  * **Ordenação anti-deadlock**: `OrderBy(id => id)` para garantir ordenação determinística de produtos durante o bloqueio pessimista concorrente.
+
+---
+
 ## 🚀 Como executar o projeto
 
-### 🐳 Opção 1: Via Docker Compose (recomendado — 1 comando)
+### 🐳 Opção 1: via Docker Compose (Recomendado — 1 Comando)
 
 Com o Docker instalado, execute na raiz do projeto:
 
@@ -82,7 +130,7 @@ O Docker inicializará e conectará automaticamente os 4 serviços:
 
 ---
 
-### 💻 Opção 2: Execução local manual (sem Docker)
+### 💻 Opção 2: Execução local manual (Sem Docker)
 
 #### Pré-requisitos
 * [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
@@ -93,14 +141,14 @@ O Docker inicializará e conectará automaticamente os 4 serviços:
 Em terminais separados, execute:
 
 ```bash
-# Terminal 1: Estoque Service (porta 5001)
+# Terminal 1: Estoque Service (Porta 5001)
 dotnet run --project backend/EstoqueService
 
 # Terminal 2: Faturamento Service (Porta 5002)
 dotnet run --project backend/FaturamentoService
 ```
 
-#### 2. Iniciar o Frontend Angular
+#### 2. Iniciar o frontend Angular
 ```bash
 # Terminal 3: Frontend Angular (Porta 4200)
 cd frontend
@@ -109,21 +157,3 @@ npm start
 ```
 
 Acesse a aplicação no navegador em: **`http://localhost:4200`**.
-
----
-
-## 🛠️ Stack tecnológica
-
-* **Backend**:
-  * C# / .NET 9 (ASP.NET Core Web API)
-  * Entity Framework Core 9
-  * PostgreSQL (Npgsql)
-  * Swagger / OpenAPI
-* **Frontend**:
-  * Angular 18+ (Standalone Components)
-  * Angular Material & CDK
-  * TypeScript & RxJS
-  * Design Tokens e tipografia corporativa Korp (Work Sans)
-* **DevOps & conteinerização**:
-  * Docker & Docker Compose (Multi-stage builds)
-  * Nginx Alpine (Reverse proxy & Static Server)

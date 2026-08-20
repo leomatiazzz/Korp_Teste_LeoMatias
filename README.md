@@ -4,7 +4,7 @@ Projeto desenvolvido como parte do processo seletivo técnico da **Korp (Viasoft
 
 ---
 
-## 📌 Visão Geral da Arquitetura
+## 📌 Visão geral da arquitetura
 
 O sistema é estruturado em uma arquitetura de **Microsserviços em .NET 9** e um frontend SPA em **Angular com Angular Material**, utilizando persistência real no **PostgreSQL** com isolamento por schemas.
 
@@ -36,9 +36,9 @@ O sistema é estruturado em uma arquitetura de **Microsserviços em .NET 9** e u
 
 ---
 
-## ✨ Funcionalidades e Requisitos Atendidos
+## ✨ Funcionalidades e requisitos atendidos
 
-### Requisitos Obrigatórios
+### Requisitos obrigatórios
 1. **Estoque Service**:
    * CRUD completo de produtos (código único, descrição, saldo).
    * Consulta de saldo em tempo real por ID (`GET /api/produtos/{id}/saldo`).
@@ -47,26 +47,26 @@ O sistema é estruturado em uma arquitetura de **Microsserviços em .NET 9** e u
    * Criação de notas fiscais no status **Aberta** com múltiplos produtos.
    * Geração e persistência de numeração sequencial automática contínua.
    * Emissão/Fechamento da nota com acionamento do Estoque Service para dedução do saldo.
-   * **Resiliência e Tolerância a Falhas**: Se o Estoque Service estiver offline ou inacessível no momento da impressão, a nota permanece **Aberta** e o sistema retorna erro amigável (`HTTP 503 Service Unavailable`).
+   * **Resiliência e tolerância a falhas**: Se o Estoque Service estiver offline ou inacessível no momento da impressão, a nota permanece **Aberta** e o sistema retorna erro amigável (`HTTP 503 Service Unavailable`).
 3. **Frontend Angular**:
-   * Interface completa em Angular Material com **Identidade Visual Korp** (fonte *Work Sans*, paleta azul ardósia `#2b485a` e magenta `#ff0c46`).
+   * Interface completa em Angular Material com **identidade visual Korp** (fonte *Work Sans*, paleta azul ardósia `#2b485a` e magenta `#ff0c46`).
    * Listagem de notas com filtros de status (Todas, Abertas, Fechadas), modal de detalhes e botão destacado de emissão.
    * Catálogo de produtos com consulta instantânea de saldo e formulário de cadastro.
 
-### Requisitos Opcionais Implementados ⭐
-1. **Tratamento de Concorrência (Bloqueio Pessimista no PostgreSQL)**:
+### Requisitos opcionais implementados ⭐
+1. **Tratamento de concorrência (bloqueio pessimista no PostgreSQL)**:
    * Proteção contra condições de corrida (*race conditions*) utilizando `SELECT ... FOR UPDATE` no PostgreSQL dentro da transação atômica do `EstoqueService`.
    * Ordenação determinística de produtos para prevenção de *deadlocks*.
    * Garante consistência mesmo com saldo 1 sendo disputado simultaneamente por notas diferentes.
-2. **Implementação de Idempotência Distribuída**:
+2. **Implementação de idempotência distribuída**:
    * Tabela `estoque.movimentacoes_estoque` para rastreamento de baixas por `NotaFiscalId`.
    * Disparos repetidos ou duplos cliques no botão de impressão retornam confirmação de sucesso sem debitar o saldo mais de uma vez.
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como executar o projeto
 
-### 🐳 Opção 1: Via Docker Compose (Recomendado — 1 Comando)
+### 🐳 Opção 1: Via Docker Compose (recomendado — 1 comando)
 
 Com o Docker instalado, execute na raiz do projeto:
 
@@ -82,18 +82,18 @@ O Docker inicializará e conectará automaticamente os 4 serviços:
 
 ---
 
-### 💻 Opção 2: Execução Local Manual (Sem Docker)
+### 💻 Opção 2: Execução local manual (sem Docker)
 
 #### Pré-requisitos
 * [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 * [Node.js (v20+)](https://nodejs.org/)
 * [PostgreSQL](https://www.postgresql.org/) (porta 5432 padrão com senha configurada no `appsettings.json`)
 
-#### 1. Iniciar os Microsserviços
+#### 1. Iniciar os microsserviços
 Em terminais separados, execute:
 
 ```bash
-# Terminal 1: Estoque Service (Porta 5001)
+# Terminal 1: Estoque Service (porta 5001)
 dotnet run --project backend/EstoqueService
 
 # Terminal 2: Faturamento Service (Porta 5002)
@@ -112,7 +112,7 @@ Acesse a aplicação no navegador em: **`http://localhost:4200`**.
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Stack tecnológica
 
 * **Backend**:
   * C# / .NET 9 (ASP.NET Core Web API)
@@ -123,7 +123,7 @@ Acesse a aplicação no navegador em: **`http://localhost:4200`**.
   * Angular 18+ (Standalone Components)
   * Angular Material & CDK
   * TypeScript & RxJS
-  * Design Tokens e Tipografia Corporativa Korp (Work Sans)
-* **DevOps & Conteinerização**:
+  * Design Tokens e tipografia corporativa Korp (Work Sans)
+* **DevOps & conteinerização**:
   * Docker & Docker Compose (Multi-stage builds)
   * Nginx Alpine (Reverse proxy & Static Server)

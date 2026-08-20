@@ -1,0 +1,11 @@
+**/.git
+**/.github
+**/.vscode
+**/.idea
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/.angular
+**/.system_generated
+*.md

@@ -1,0 +1,96 @@
+services:
+  # ============================================================================
+  # 1. Banco de Dados PostgreSQL
+  # ============================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: korp-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: korp_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - korp_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d korp_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - korp-network
+
+  # ============================================================================
+  # 2. Microsserviço de Estoque (.NET 9)
+  # ============================================================================
+  estoque-service:
+    build:
+      context: ./backend/EstoqueService
+      dockerfile: Dockerfile
+    container_name: korp-estoque-service
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5001
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=korp_db;Username=postgres;Password=1234;Include Error Detail=true
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - korp-network
+
+  # ============================================================================
+  # 3. Microsserviço de Faturamento (.NET 9)
+  # ============================================================================
+  faturamento-service:
+    build:
+      context: ./backend/FaturamentoService
+      dockerfile: Dockerfile
+    container_name: korp-faturamento-service
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5002
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=korp_db;Username=postgres;Password=1234;Include Error Detail=true
+      - Services__EstoqueServiceUrl=http://estoque-service:5001/
+    ports:
+      - "5002:5002"
+    depends_on:
+      db:
+        condition: service_healthy
+      estoque-service:
+        condition: service_started
+    networks:
+      - korp-network
+
+  # ============================================================================
+  # 4. Frontend Angular (Nginx)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: korp-frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - estoque-service
+      - faturamento-service
+    networks:
+      - korp-network
+
+# ==============================================================================
+# Redes e Volumes Persistentes
+# ==============================================================================
+networks:
+  korp-network:
+    driver: bridge
+
+volumes:
+  korp_pgdata:
+    driver: local

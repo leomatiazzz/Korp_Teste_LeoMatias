@@ -64,7 +64,7 @@ O sistema é estruturado em uma arquitetura de **microsserviços em .NET 9** e u
 
 ---
 
-## 📋 Detalhamento técnico da solução (exigido pelo desafio)
+## 📋 Detalhamento técnico da solução
 
 Conforme os itens solicitados na especificação técnica do teste:
 

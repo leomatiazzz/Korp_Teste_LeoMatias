@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -313,6 +313,7 @@ export class ProdutosComponent implements OnInit, OnDestroy {
   private produtoService = inject(ProdutoService);
   private notification = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   private destroy$ = new Subject<void>();
 
@@ -341,6 +342,7 @@ export class ProdutosComponent implements OnInit, OnDestroy {
 
   carregarProdutos(): void {
     this.carregando = true;
+    this.cdr.markForCheck();
     this.produtoService.obterTodos()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -348,10 +350,12 @@ export class ProdutosComponent implements OnInit, OnDestroy {
           this.produtos = dados;
           this.aplicarFiltro();
           this.carregando = false;
+          this.cdr.detectChanges();
         },
         error: (erro) => {
           this.notification.error(erro.message || 'Erro ao carregar produtos.');
           this.carregando = false;
+          this.cdr.detectChanges();
         }
       });
   }
@@ -367,6 +371,7 @@ export class ProdutosComponent implements OnInit, OnDestroy {
       p.codigo.toLowerCase().includes(termo) ||
       p.descricao.toLowerCase().includes(termo)
     );
+    this.cdr.detectChanges();
   }
 
   abrirModalCriar(): void {

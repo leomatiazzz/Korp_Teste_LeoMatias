@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -169,6 +169,7 @@ import { ProdutoSaldo } from '../../../core/models/produto.model';
 })
 export class SaldoDialogComponent implements OnInit {
   private produtoService = inject(ProdutoService);
+  private cdr = inject(ChangeDetectorRef);
   dialogRef = inject(MatDialogRef<SaldoDialogComponent>);
 
   carregando = true;
@@ -181,9 +182,11 @@ export class SaldoDialogComponent implements OnInit {
       next: (res) => {
         this.saldoInfo = res;
         this.carregando = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.carregando = false;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -430,6 +430,7 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
   private notaFiscalService = inject(NotaFiscalService);
   private notification = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   private destroy$ = new Subject<void>();
 
@@ -465,6 +466,7 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
 
   carregarNotas(): void {
     this.carregando = true;
+    this.cdr.markForCheck();
     this.notaFiscalService.obterTodas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -472,10 +474,12 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
           this.notas = dados;
           this.aplicarFiltro();
           this.carregando = false;
+          this.cdr.detectChanges();
         },
         error: (erro) => {
           this.notification.error(erro.message || 'Erro ao carregar notas fiscais.');
           this.carregando = false;
+          this.cdr.detectChanges();
         }
       });
   }
@@ -483,6 +487,7 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
   filtrarStatus(status: 'TODAS' | 'ABERTA' | 'FECHADA'): void {
     this.filtroStatus = status;
     this.aplicarFiltro();
+    this.cdr.detectChanges();
   }
 
   aplicarFiltro(): void {
@@ -515,6 +520,7 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
     }
 
     this.processandoNotaId = nota.id;
+    this.cdr.detectChanges();
 
     this.notaFiscalService.imprimir(nota.id)
       .pipe(takeUntil(this.destroy$))
@@ -523,12 +529,14 @@ export class NotasFiscaisComponent implements OnInit, OnDestroy {
           this.processandoNotaId = undefined;
           this.notification.success(resultado.mensagem || `Nota Fiscal #${this.formatNumero(nota.numero)} emitida e fechada com sucesso!`);
           this.carregarNotas();
+          this.cdr.detectChanges();
         },
         error: (erro) => {
           this.processandoNotaId = undefined;
           this.notification.error(erro.message || 'Falha ao processar impressão da nota fiscal.');
           // A nota permanece aberta, nenhuma alteração indevida é feita
           this.carregarNotas();
+          this.cdr.detectChanges();
         }
       });
   }

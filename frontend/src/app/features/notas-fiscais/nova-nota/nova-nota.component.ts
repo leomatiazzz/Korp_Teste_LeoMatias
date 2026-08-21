@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -521,6 +521,7 @@ export class NovaNotaComponent implements OnInit, OnDestroy {
   private notaFiscalService = inject(NotaFiscalService);
   private produtoService = inject(ProdutoService);
   private notification = inject(NotificationService);
+  private cdr = inject(ChangeDetectorRef);
 
   private destroy$ = new Subject<void>();
 
@@ -563,6 +564,7 @@ export class NovaNotaComponent implements OnInit, OnDestroy {
 
   carregarDadosIniciais(): void {
     this.carregandoInicial = true;
+    this.cdr.markForCheck();
 
     forkJoin({
       produtos: this.produtoService.obterTodos(),
@@ -574,10 +576,12 @@ export class NovaNotaComponent implements OnInit, OnDestroy {
         this.produtos = res.produtos;
         this.proximoNumero = res.numero.proximoNumero;
         this.carregandoInicial = false;
+        this.cdr.detectChanges();
       },
       error: (erro) => {
         this.notification.error('Erro ao carregar dados iniciais: ' + erro.message);
         this.carregandoInicial = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -585,6 +589,7 @@ export class NovaNotaComponent implements OnInit, OnDestroy {
   onProdutoSelecionado(): void {
     const id = this.itemForm.get('produtoId')?.value;
     this.produtoSelecionado = this.produtos.find(p => p.id === id);
+    this.cdr.detectChanges();
   }
 
   adicionarItem(): void {

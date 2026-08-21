@@ -20,3 +20,5 @@ yarn-error.log*
 .vscode/
 *.swp
 *.DS_Store
+
+ROTEIRO_GRAVACAO_VIDEO.md
